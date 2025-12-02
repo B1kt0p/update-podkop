@@ -1,5 +1,5 @@
 # Лучше использовать официальный образ и указать свою цель
-FROM openwrt/sdk:ath79-generic-24.10.3
+FROM openwrt/sdk:aarch64_cortex-a53-24.10.3
 # Или если itdoginfo тебе очень нравится и работает — можно оставить:
 # FROM itdoginfo/openwrt-sdk-ipk:24.10.3
 
