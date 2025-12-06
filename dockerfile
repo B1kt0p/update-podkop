@@ -8,12 +8,13 @@ ENV VERSION=v${VERSION}
 
 # Копируем свой пакет в стандартное место
 COPY update-podkop /builder/package/update-podkop
+COPY luci-app-update-podkop /builder/package/luci-app-update-podkop
 
 WORKDIR /builder
 
 # Только defconfig + сборка нужного пакета
 RUN make defconfig && \
-    make package/update-podkop/compile V=s -j$(($(nproc) + 1)) &&\
+    make package/update-podkop/compile V=s -j$(($(nproc) + 1)) && \
     make package/luci-app-update-podkop/compile V=s -j$(($(nproc) + 1))
 
 CMD find bin -name "*update-podkop*.ipk" -exec cp {} /out/ \;
