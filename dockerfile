@@ -6,7 +6,7 @@ ENV VERSION=v${VERSION}
 
 # Копируем свои пакеты в то место, куда их увидит OpenWrt после setup
 COPY update-podkop                /builder/package/update-podkop
-COPY luci-app-update-podkop-git   /builder/package/luci-app-update-podkop-git
+COPY luci-app-update-podkop   /builder/package/luci-app-update-podkop
 
 
 # Делаем всё одним RUN, чтобы точно видеть где падает
