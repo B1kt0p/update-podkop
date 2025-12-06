@@ -5,11 +5,9 @@ ARG VERSION=0.1
 ENV VERSION=v${VERSION}
 
 # Копируем свои пакеты в то место, куда их увидит OpenWrt после setup
-COPY update-podkop          /builder/package/update-podkop
-COPY luci-app-update-podkop /builder/package/luci-app-update-podkop
+COPY ./update-podkop          /builder/package/feeds/utilities/update-podkop
+COPY ./luci-app-update-podkop /builder/package/feeds/luci/luci-app-update-podkop
 
-# Переходим в корень SDK (именно туда распаковывает setup.sh)
-WORKDIR /openwrt
 
 # Делаем всё одним RUN, чтобы точно видеть где падает
 RUN make defconfig && \
