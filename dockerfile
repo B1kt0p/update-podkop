@@ -9,13 +9,14 @@ COPY luci-app-update-podkop /builder/package/luci-app-update-podkop
 
 WORKDIR /builder
 
-# Обязательные шаги — без них пакеты не увидит система сборки
-RUN ./scripts/feeds update -a && \
+# КРИТИЧЕСКИ ВАЖНО — добавляем хотя бы один стандартный feed,
+# иначе ./scripts/feeds install -a ничего не сделает и пакеты не появятся
+RUN echo "src-link custom /builder/package" >> feeds.conf && \
+    ./scripts/feeds update -a && \
     ./scripts/feeds install -a && \
     make defconfig && \
-    make package/update-podkop/compile          V=sc -j$(nproc) && \
+    make package/update-podkop/compile V=sc -j$(nproc) && \
     make package/luci-app-update-podkop/compile V=sc -j$(nproc)
 
-# Одна команда — копирует оба .ipk в /out
-CMD find bin -name "*update-podkop*.ipk" -exec cp {} /out/ \; && \
-    find bin -name "*luci-app-update-podkop*.ipk" -exec cp {} /out/ \;
+# Одна правильная JSON-форма CMD (убираем warning)
+CMD ["/bin/sh", "-c", "find bin -name \"*update-podkop*.ipk\" -exec cp {} /out/ \\; && find bin -name \"*luci-app-update-podkop*.ipk\" -exec cp {} /out/ \\;"]
