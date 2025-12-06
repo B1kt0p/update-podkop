@@ -1,0 +1,13 @@
+{
+    "admin/services/update_podkop": {
+        "title": "Update Podkop",
+        "order": 20,
+        "action": {
+            "type": "view",
+            "path": "update_podkop/config"
+        },
+        "depends": {
+            "acl": ["luci-app-update-podkop"]
+        }
+    }
+}
