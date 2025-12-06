@@ -7,19 +7,18 @@
 
 return view.extend({
     load: function() {
-        return Promise.all([
-            uci.load('update-podkop')
-        ]);
+        return uci.load('update-podkop');
     },
 
-    render: function() {
+    render: function(data) {
         var m, s, o;
 
-        m = new form.Map('update-podkop', _('Update Podkop Configuration'),
+        m = new form.Map('update-podkop', _('Update Podkop'),
             _('Настройка параметров для update-podkop'));
 
-        s = m.section(form.TypedSection, 'settings', _('Settings'));
-        s.anonymous = true;
+        // Основная секция настроек
+        s = m.section(form.NamedSection, 'settings', 'settings', _('Settings'));
+        s.anonymous = false;
         s.addremove = false;
 
         o = s.option(form.Value, 'url', _('URL'),
@@ -32,55 +31,56 @@ return view.extend({
         o.password = true;
         o.rmempty = false;
 
-        // Кнопка запуска
-        s = m.section(form.NamedSection, '_actions', 'actions', _('Actions'));
+        // Секция действий
+        s = m.section(form.NamedSection, '_run', 'run', _('Actions'));
         s.anonymous = true;
-        s.cfgsections = function() { return ['_actions']; };
 
-        o = s.option(form.Button, '_run', _('Run Update'));
+        o = s.option(form.Button, '_run');
         o.inputtitle = _('Запустить update-podkop');
         o.inputstyle = 'apply';
-        o.onclick = L.bind(function(ev, section_id, value) {
+        o.onclick = function(ev) {
             var btn = ev.target;
             btn.disabled = true;
             btn.value = _('Выполняется...');
 
-            return fs.exec('/usr/bin/update-podkop', [])
+            return fs.exec('/usr/bin/update-podkop')
                 .then(function(res) {
+                    var output = (res.stdout || '') + (res.stderr || '');
+                    
                     if (res.code === 0) {
                         ui.addNotification(null, 
                             E('p', _('Команда выполнена успешно')), 
                             'info');
-                        
-                        var output = (res.stdout || '') + (res.stderr || '');
-                        if (output) {
-                            ui.showModal(_('Результат выполнения'), [
-                                E('pre', { 'style': 'max-height: 400px; overflow: auto;' }, 
-                                    output),
-                                E('div', { 'class': 'right' }, [
-                                    E('button', {
-                                        'class': 'btn cbi-button',
-                                        'click': ui.hideModal
-                                    }, _('Закрыть'))
-                                ])
-                            ]);
-                        }
                     } else {
                         ui.addNotification(null, 
-                            E('p', _('Ошибка выполнения: ') + (res.stderr || res.stdout || 'Unknown error')), 
+                            E('p', _('Ошибка выполнения (код: %d)').format(res.code)), 
                             'error');
+                    }
+
+                    if (output.trim()) {
+                        ui.showModal(_('Результат выполнения'), [
+                            E('pre', { 
+                                'style': 'max-height: 400px; overflow: auto; background: #f5f5f5; padding: 10px;' 
+                            }, output),
+                            E('div', { 'class': 'right' }, [
+                                E('button', {
+                                    'class': 'btn cbi-button',
+                                    'click': ui.hideModal
+                                }, _('Закрыть'))
+                            ])
+                        ]);
                     }
                 })
                 .catch(function(err) {
                     ui.addNotification(null, 
-                        E('p', _('Ошибка: ') + err.message), 
+                        E('p', _('Ошибка: %s').format(err.message)), 
                         'error');
                 })
                 .finally(function() {
                     btn.disabled = false;
                     btn.value = _('Запустить update-podkop');
                 });
-        }, this);
+        };
 
         return m.render();
     },
