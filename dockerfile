@@ -15,4 +15,4 @@ RUN make defconfig && \
     make package/luci-app-update-podkop/compile V=sc -j$(nproc)
 
 # Копируем готовые ipk в /out одной командой (JSON-формат — без warning)
-CMD ["/bin/sh", "-c", "find bin -name '*update-podkop*.ipk' -o -name '*luci-app-update-podkop*.ipk' -exec cp {} /out/ \\;"]
+CMD ["/bin/sh", "-c", "cp $(find bin -name '*update-podkop*.ipk' -o -name '*luci-app-update-podkop*.ipk') /out/"]
