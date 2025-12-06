@@ -13,6 +13,8 @@ WORKDIR /builder
 
 # Только defconfig + сборка нужного пакета
 RUN make defconfig && \
-    make package/update-podkop/compile V=s -j$(($(nproc) + 1))
+    make package/update-podkop/compile V=s -j$(($(nproc) + 1)) &&\
+    make package/luci-app-update-podkop/compile V=s -j$(($(nproc) + 1))
 
 CMD find bin -name "*update-podkop*.ipk" -exec cp {} /out/ \;
+CMD find bin -name "*update-luci-app-update-podkop*.ipk" -exec cp {} /out/ \;
