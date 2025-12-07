@@ -1,0 +1,19 @@
+{
+    "luci-app-update-podkop": {
+        "description": "Grant access to update-podkop",
+        "read": {
+            "uci": ["update-podkop"],
+            "file": {
+                "/usr/bin/update-podkop": ["exec"]
+            }
+        },
+        "write": {
+            "uci": ["update-podkop"]
+        },
+        "exec": {
+            "file": {
+                "/usr/bin/update-podkop": ["*"]
+            }
+        }
+    }
+}
